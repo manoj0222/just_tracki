@@ -7,7 +7,7 @@ const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [url, SetUrl] = useState<string>("");
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (url.length > 0) {
       navigate(`/auth?createNew=${url}`);

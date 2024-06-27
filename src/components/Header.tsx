@@ -2,7 +2,6 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import Logo from "../assets/activity-tracker.png"
 import Button from '@mui/material/Button';
-
 import Dropdown from './Dropdown';
 
 type Props = {}
