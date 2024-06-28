@@ -3,13 +3,13 @@ const User = require("../models/Usermodel");
 
 const createUserService = async (userData) => {
   const { userId,password } = userData;
-  console.log("Inside the createUserService")
+  console.log("Inside the createUserService",userData)
   const existingUser = await User.findOne({userId:userId});
-  if (existingUser) {
+  if (existingUser!=null) {
     throw new Error("User with the same username or email already exists");
   }
   try {
-    const newUser = new User(userData);
+    const newUser = new User(userData); 
     await newUser.save();
     return newUser;
   } catch (error) {

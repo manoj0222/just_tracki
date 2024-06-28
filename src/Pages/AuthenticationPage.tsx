@@ -5,7 +5,6 @@ import Tab from "@mui/material/Tab";
 import { useSearchParams } from "react-router-dom";
 import TabPanelProps from "../interfaces/TabPanelProps";
 import LogIn from "./Auth/LogIn";
-import { Sign } from "crypto";
 import Register from "./Auth/Register";
 
 

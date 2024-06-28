@@ -7,14 +7,10 @@ const createUser = async (req, res) => {
     const user = await createUserService(req.body);
     res.status(201).json(user);
   } catch (error) {
-    let message = 'Error creating user';
-    if (error.code === 11000) {
-      message = 'Username or email already exists';
+    if (error.message === "User with the same username or email already exists") {
+      return res.status(409).json({ message: 'User already exists' });
     }
-    else {
-      message = error.message || message;
-    }
-    res.status(500).json({ message });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
