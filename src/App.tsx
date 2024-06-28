@@ -1,15 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css';
-import AppLayout from './layout/AppLayout';
-import HomePage from './Pages/HomePage';
-import DashBoard from './Pages/DashBoard';
-import AuthenticationPage from './Pages/AuthenticationPage';
-import UrlPage from './Pages/UrlPage';
-import RedirectLinkPage from './Pages/RedirectLinkPage';
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import AppLayout from "./layout/AppLayout";
+import HomePage from "./Pages/HomePage";
+import DashBoard from "./Pages/DashBoard";
+import AuthenticationPage from "./Pages/AuthenticationPage";
+import UrlPage from "./Pages/UrlPage";
+import RedirectLinkPage from "./Pages/RedirectLinkPage";
+import ProtectedRoutes from "./components/ProtectedRoutes";
 
-import { RouterProvider,createBrowserRouter} from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 const router = createBrowserRouter([
   {
@@ -17,11 +18,15 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element:<HomePage />,
+        element: <HomePage />,
       },
       {
         path: "/dashboard",
-        element: <DashBoard />,
+        element: (
+          <ProtectedRoutes>
+            <DashBoard />
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/auth",
@@ -29,7 +34,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/link/:id",
-        element: <UrlPage />,
+        element: (
+          <ProtectedRoutes>
+            <UrlPage />
+          </ProtectedRoutes>
+        ),
       },
       {
         path: "/:id",
@@ -39,13 +48,8 @@ const router = createBrowserRouter([
   },
 ]);
 
-
 function App() {
-  return(
-    <RouterProvider router={router}>
-
-    </RouterProvider>
-  );
+  return <RouterProvider router={router}></RouterProvider>;
 }
 
 export default App;
