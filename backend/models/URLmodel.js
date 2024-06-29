@@ -1,7 +1,7 @@
-import mongoose, { Mongoose } from "mongoose";
+const mongoose = require("mongoose");
 
 
-export const URLSchema = new mongoose.Schema({
+ const URLSchema = new mongoose.Schema({
     originalurl:{
         type:String,
         required:true
@@ -10,16 +10,13 @@ export const URLSchema = new mongoose.Schema({
         type:Date,
         default:new Date().toISOString()
     },
-    short_url:{
-        type:String,
-    },
     custom_url:{
         type:String,
         unique:true
     },
-    user_id:{
-        type:String,
-        required:true
+    user_id: {
+        type: String,
+        required: true
     },
     title:{
         type:String,
@@ -30,4 +27,7 @@ export const URLSchema = new mongoose.Schema({
     
 })
 
-export const URL = mongoose.model('URLSchema', URLSchema);
+const URL = mongoose.model('URLSchema', URLSchema);
+
+
+module.exports=URL;

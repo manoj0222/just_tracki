@@ -1,9 +1,9 @@
-enum Status {
+enum STATUS {
     SUCCESS = 'SUCCESS',
     FAILURE = 'FAILURE',
-    NONE = 'NONE',
+    IDLE = 'IDLE',
     LOADING="LOADING"
   }
   
-  export default Status;
+  export default STATUS;
   
