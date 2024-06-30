@@ -4,7 +4,10 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
 
-const userRouter= require('./routes/Userroute'); // Assuming Userroute.js is in dist/routes directory
+const userRouter= require('./routes/Userroute'); 
+const urlRouter =require("./routes/Urlroute");
+const visiteduser = require("./routes/VisitedUsersroute")
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,7 +17,9 @@ app.use(bodyParser.json());
 app.use(cors()); // Enable CORS for all origins
 
 // Routes
-app.use('/users', userRouter); // Mount the userRouter for '/users' endpoint
+app.use('/users', userRouter); 
+app.use("/dashboard",urlRouter);
+app.use("/visiteduser",visiteduser);
 
 // Connect to MongoDB
 mongoose.connect(connectionString, {
