@@ -9,6 +9,7 @@ import STATUS from "../enum/Status";
 import { UAParser } from "ua-parser-js";
 import axios from "axios";
 import { saveVisitors } from "../feature/StatsofUser/VistorsSlice";
+import useRedirection from "../Hooks/useRedirection";
 
 const parser = new UAParser();
 
@@ -17,26 +18,12 @@ const RedirectLinkPage: React.FC = () => {
   const { isLoading, originalurl } = useSelector(
     (state: RootState) => state.dashbord
   );
+  const redirection = useRedirection();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getUrlsByUserIdAndCustomUrl(custom_url));
   }, []);
-
-  const redirectToOriginalUrl = async () => {
-    let url_id = _id;
-    const res = parser.getResult();
-    const device = res.type || "desktop"; // Default to desktop if type is not detected
-
-    try {
-      const response = await axios.get("https://ipapi.co/json");
-      const { city, country_name: country } = await response.data;
-      dispatch(saveVisitors({ city, country, device, url_id }));
-      window.open(originalurl, "_blank");
-    } catch (error) {
-      console.log("Error has occurred, please check the third-party API");
-    }
-  };
 
   if (isLoading === STATUS.LOADING) {
     return (
@@ -56,7 +43,7 @@ const RedirectLinkPage: React.FC = () => {
   return (
     <div className="flex justify-center items-center">
       <button
-        onClick={redirectToOriginalUrl}
+        onClick={()=>{redirection(_id,originalurl)}}
         className="font-semibold p-2 text-blue-300 border rounded-xl p-2 hover:bg-teal-50"
       >
         Click to redirect to Original URL...
