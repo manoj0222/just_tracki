@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/:custom_url",
+        path: "/visit/:custom_url/:_id",
         element: <RedirectLinkPage />,
       },
     ],
