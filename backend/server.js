@@ -19,7 +19,7 @@ app.use(cors()); // Enable CORS for all origins
 // Routes
 app.use('/users', userRouter); 
 app.use("/dashboard",urlRouter);
-app.use("/visiteduser",visiteduser);
+app.use("/visitedusers",visiteduser);
 
 // Connect to MongoDB
 mongoose.connect(connectionString, {

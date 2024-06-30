@@ -58,7 +58,7 @@ export default function LinkCard({ url }: Props) {
         <span className="text-3xl font-extrabold hover:underline cursor-pointer">
           {url.title}
         </span>
-        <Link to={`/${url.custom_url}`}>
+        <Link to={`/visit/${url.custom_url}/${url?._id}`}>
           <span className="text-2xl text-blue-400 font-bold hover:underline cursor-pointer">
             {url.custom_url || ""}
           </span>

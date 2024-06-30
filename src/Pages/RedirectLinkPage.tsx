@@ -6,20 +6,36 @@ import { getUrlsByUserIdAndCustomUrl } from "../feature/dashboard/Dashboardslice
 import { Box } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import STATUS from "../enum/Status";
+import { UAParser } from "ua-parser-js";
+import axios from "axios";
+import { saveVisitors } from "../feature/StatsofUser/VistorsSlice";
+
+const parser = new UAParser();
 
 const RedirectLinkPage: React.FC = () => {
-  const { custom_url } = useParams();
-  const { isLoading, originalurl } = useSelector((state: RootState) => state.dashbord);
+  const { custom_url, _id } = useParams();
+  const { isLoading, originalurl } = useSelector(
+    (state: RootState) => state.dashbord
+  );
   const dispatch = useDispatch();
-  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     dispatch(getUrlsByUserIdAndCustomUrl(custom_url));
   }, []);
 
-  const redirectToOriginalUrl = () => {
-    setRedirecting(true);
-    window.open(originalurl, "_blank");
+  const redirectToOriginalUrl = async () => {
+    let url_id = _id;
+    const res = parser.getResult();
+    const device = res.type || "desktop"; // Default to desktop if type is not detected
+
+    try {
+      const response = await axios.get("https://ipapi.co/json");
+      const { city, country_name: country } = await response.data;
+      dispatch(saveVisitors({ city, country, device, url_id }));
+      window.open(originalurl, "_blank");
+    } catch (error) {
+      console.log("Error has occurred, please check the third-party API");
+    }
   };
 
   if (isLoading === STATUS.LOADING) {
@@ -31,16 +47,20 @@ const RedirectLinkPage: React.FC = () => {
   }
 
   if (!originalurl) {
-    return <div className="text-3xl font-semibold">Original URL not found.</div>;
+    return (
+      <div className="text-3xl font-semibold">Original URL not found.</div>
+    );
   }
 
-  if (redirecting) {
-    return <div>Redirecting...</div>;
-  }
-
+  // Render a button for manual redirection in case automatic redirection fails
   return (
-    <div>
-      <button onClick={redirectToOriginalUrl} className="font-semibold p-2 text-blue-300">Click to redirect to Original URL...</button>
+    <div className="flex justify-center items-center">
+      <button
+        onClick={redirectToOriginalUrl}
+        className="font-semibold p-2 text-blue-300 border rounded-xl p-2 hover:bg-teal-50"
+      >
+        Click to redirect to Original URL...
+      </button>
     </div>
   );
 };
