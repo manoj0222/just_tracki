@@ -14,9 +14,10 @@ import {
 
 type Props = {
   url: URLInfo;
+ 
 };
 
-export default function LinkCard({ url }: Props) {
+export default function LinkCard({url }: Props) {
   const dispatch = useDispatch();
 
   const handledelete = async () => {

@@ -3,6 +3,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import STATUS from "../../enum/Status";
 import { RootState } from "../../store/store";
+import { act } from "react";
 
 interface DashBoard {
   createdLinks: Array<URLInfo>;
@@ -11,6 +12,7 @@ interface DashBoard {
   isLoading: STATUS;
   originalurl: string;
   countvisiters: number;
+  noofcreatedLinks: number;
 }
 
 const initialState: DashBoard = {
@@ -20,12 +22,25 @@ const initialState: DashBoard = {
   isLoading: STATUS.IDLE,
   originalurl: "",
   countvisiters: 0,
+  noofcreatedLinks: 0,
 };
 
 const DashBoardSlice = createSlice({
   name: "dashboardslice",
   initialState,
-  reducers: {},
+  reducers: {
+    searchedText(state,action: PayloadAction<string>) {
+      let text = action.payload;
+      console.log(text);
+      if (text) {
+        state.filteredLinks = state.createdLinks.filter((eachitem) => {
+          return eachitem.title.toLowerCase().includes(text.toLowerCase());
+        });
+      } else {
+        state.filteredLinks = state.createdLinks;
+      }
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(getAllCreatedLinksByUserId.pending, (state) => {
@@ -35,6 +50,8 @@ const DashBoardSlice = createSlice({
         state.isLoading = STATUS.SUCCESS;
         console.log(action.payload.data);
         state.createdLinks = action.payload.data;
+        state.filteredLinks = action.payload.data;
+        state.noofcreatedLinks = state.createdLinks.length;
       })
       .addCase(getAllCreatedLinksByUserId.rejected, (state) => {
         state.isLoading = STATUS.FAILURE;
@@ -183,7 +200,7 @@ export const findUrlById: any = createAsyncThunk(
       const response = await axios.get(
         `http://localhost:5000/dashboard/urls/${_id}`
       );
-      console.log("Inside findByurl",response)
+      console.log("Inside findByurl", response);
       if (response.status === 200) {
         return response.data;
       }
@@ -193,5 +210,7 @@ export const findUrlById: any = createAsyncThunk(
     }
   }
 );
+
+export const { searchedText } = DashBoardSlice.actions;
 
 export default DashBoardSlice.reducer;
