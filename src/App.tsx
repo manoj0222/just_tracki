@@ -1,14 +1,12 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+
 import "./App.css";
 import AppLayout from "./layout/AppLayout";
 import HomePage from "./Pages/HomePage";
 import DashBoard from "./Pages/DashBoard";
 import AuthenticationPage from "./Pages/AuthenticationPage";
-import UrlPage from "./Pages/UrlPage";
 import RedirectLinkPage from "./Pages/RedirectLinkPage";
 import ProtectedRoutes from "./components/ProtectedRoutes";
+import StatsofLinkView from "./Pages/StatsofLinkView";
 
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
@@ -33,15 +31,15 @@ const router = createBrowserRouter([
         element: <AuthenticationPage />,
       },
       {
-        path: "/link/:id",
+        path: "/link/:id/:title/:qrcode",
         element: (
           <ProtectedRoutes>
-            <UrlPage />
+            <StatsofLinkView />
           </ProtectedRoutes>
         ),
       },
       {
-        path: "/:custom_url",
+        path: "/visit/:custom_url/:_id",
         element: <RedirectLinkPage />,
       },
     ],

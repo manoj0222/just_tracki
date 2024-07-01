@@ -3,29 +3,44 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import STATUS from "../../enum/Status";
 import { RootState } from "../../store/store";
+import { act } from "react";
 
 interface DashBoard {
   createdLinks: Array<URLInfo>;
-  visitedPeople: number;
   newurl: URLInfo | null;
   filteredLinks: Array<URLInfo>;
   isLoading: STATUS;
-  originalurl:string;
+  originalurl: string;
+  countvisiters: number;
+  noofcreatedLinks: number;
 }
 
 const initialState: DashBoard = {
   createdLinks: [],
-  visitedPeople: 0,
   newurl: null,
   filteredLinks: [],
   isLoading: STATUS.IDLE,
-  originalurl:""
+  originalurl: "",
+  countvisiters: 0,
+  noofcreatedLinks: 0,
 };
 
 const DashBoardSlice = createSlice({
   name: "dashboardslice",
   initialState,
-  reducers: {},
+  reducers: {
+    searchedText(state,action: PayloadAction<string>) {
+      let text = action.payload;
+      console.log(text);
+      if (text) {
+        state.filteredLinks = state.createdLinks.filter((eachitem) => {
+          return eachitem.title.toLowerCase().includes(text.toLowerCase());
+        });
+      } else {
+        state.filteredLinks = state.createdLinks;
+      }
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(getAllCreatedLinksByUserId.pending, (state) => {
@@ -35,19 +50,23 @@ const DashBoardSlice = createSlice({
         state.isLoading = STATUS.SUCCESS;
         console.log(action.payload.data);
         state.createdLinks = action.payload.data;
+        state.filteredLinks = action.payload.data;
+        state.noofcreatedLinks = state.createdLinks.length;
       })
       .addCase(getAllCreatedLinksByUserId.rejected, (state) => {
         state.isLoading = STATUS.FAILURE;
-      }).addCase(getUrlsByUserIdAndCustomUrl.pending, (state) => {
+      })
+      .addCase(getUrlsByUserIdAndCustomUrl.pending, (state) => {
         state.isLoading = STATUS.LOADING;
       })
       .addCase(getUrlsByUserIdAndCustomUrl.fulfilled, (state, action) => {
         state.isLoading = STATUS.SUCCESS;
-        state.originalurl=action.payload.data.originalurl;
+        state.originalurl = action.payload.data.originalurl;
       })
       .addCase(getUrlsByUserIdAndCustomUrl.rejected, (state) => {
         state.isLoading = STATUS.FAILURE;
-      }).addCase(deleteById.pending, (state) => {
+      })
+      .addCase(deleteById.pending, (state) => {
         state.isLoading = STATUS.LOADING;
       })
       .addCase(deleteById.fulfilled, (state, action) => {
@@ -56,6 +75,19 @@ const DashBoardSlice = createSlice({
       .addCase(deleteById.rejected, (state) => {
         state.isLoading = STATUS.FAILURE;
       })
+      .addCase(countVistors.pending, (state) => {
+        state.isLoading = STATUS.LOADING;
+      })
+      .addCase(
+        countVistors.fulfilled,
+        (state, action: PayloadAction<number>) => {
+          state.isLoading = STATUS.SUCCESS;
+          state.countvisiters = action.payload;
+        }
+      )
+      .addCase(countVistors.rejected, (state) => {
+        state.isLoading = STATUS.FAILURE;
+      });
   },
 });
 
@@ -144,5 +176,41 @@ export const getUrlsByUserIdAndCustomUrl: any = createAsyncThunk(
     }
   }
 );
+
+export const countVistors: any = createAsyncThunk(
+  "visitors/count",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/visitedusers/count"
+      ); // Replace with your actual endpoint
+      console.log("Count of visited users:", response.data.count);
+      return response.data.count; // Return the count or use it as needed
+    } catch (error) {
+      console.error("Error fetching count of visited users:", error);
+      return rejectWithValue("Error fetching count of visited users:"); // Handle error gracefully, e.g., show an error message
+    }
+  }
+);
+
+export const findUrlById: any = createAsyncThunk(
+  "dashboard/url",
+  async (_id: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/dashboard/urls/${_id}`
+      );
+      console.log("Inside findByurl", response);
+      if (response.status === 200) {
+        return response.data;
+      }
+      return rejectWithValue("Failed to fecth the URL");
+    } catch (error: any) {
+      return rejectWithValue(`Error while fetching the url: ${error}`);
+    }
+  }
+);
+
+export const { searchedText } = DashBoardSlice.actions;
 
 export default DashBoardSlice.reducer;

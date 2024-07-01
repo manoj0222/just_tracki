@@ -6,21 +6,24 @@ import { getUrlsByUserIdAndCustomUrl } from "../feature/dashboard/Dashboardslice
 import { Box } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import STATUS from "../enum/Status";
+import { UAParser } from "ua-parser-js";
+import axios from "axios";
+import { saveVisitors } from "../feature/StatsofUser/VistorsSlice";
+import useRedirection from "../Hooks/useRedirection";
+
+const parser = new UAParser();
 
 const RedirectLinkPage: React.FC = () => {
-  const { custom_url } = useParams();
-  const { isLoading, originalurl } = useSelector((state: RootState) => state.dashbord);
+  const { custom_url, _id } = useParams();
+  const { isLoading, originalurl } = useSelector(
+    (state: RootState) => state.dashbord
+  );
+  const redirection = useRedirection();
   const dispatch = useDispatch();
-  const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
     dispatch(getUrlsByUserIdAndCustomUrl(custom_url));
   }, []);
-
-  const redirectToOriginalUrl = () => {
-    setRedirecting(true);
-    window.open(originalurl, "_blank");
-  };
 
   if (isLoading === STATUS.LOADING) {
     return (
@@ -31,16 +34,20 @@ const RedirectLinkPage: React.FC = () => {
   }
 
   if (!originalurl) {
-    return <div className="text-3xl font-semibold">Original URL not found.</div>;
+    return (
+      <div className="text-3xl font-semibold">Original URL not found.</div>
+    );
   }
 
-  if (redirecting) {
-    return <div>Redirecting...</div>;
-  }
-
+  // Render a button for manual redirection in case automatic redirection fails
   return (
-    <div>
-      <button onClick={redirectToOriginalUrl} className="font-semibold p-2 text-blue-300">Click to redirect to Original URL...</button>
+    <div className="flex justify-center items-center">
+      <button
+        onClick={()=>{redirection(_id,originalurl)}}
+        className="font-semibold p-2 text-blue-300 border rounded-xl p-2 hover:bg-teal-50"
+      >
+        Click to redirect to Original URL...
+      </button>
     </div>
   );
 };

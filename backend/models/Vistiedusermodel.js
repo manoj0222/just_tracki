@@ -1,28 +1,28 @@
 const mongoose = require("mongoose");
 
-const VisitedUsers =  new mongoose.Schema({
+const VisitedUsers = new mongoose.Schema({
   vistied_at: {
     type: Date,
     default: new Date().toISOString(),
   },
   url_id: {
     type: String,
-    required:true
+    required: true
   },
   city: {
     type: String,
-    required:true
+    required: true
   },
   device: {
     type: String,
-    required:true
+    required: true
   },
   country: {
     type: String,
-    required:true
+    required: true
   },
 });
 
 const Visiters = mongoose.model("VisitedUsers", VisitedUsers);
 
-module.exports=Visiters;
+module.exports = Visiters;
