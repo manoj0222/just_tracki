@@ -9,6 +9,7 @@ interface VisitorsInfo {
   country: string;
   isLoading: STATUS | null;
   countusers: Number;
+  data:Array<any>;
 }
 
 const initialState: VisitorsInfo = {
@@ -18,6 +19,7 @@ const initialState: VisitorsInfo = {
   country: "",
   isLoading: STATUS.IDLE,
   countusers: 0,
+  data:[]
 };
 
 const VisitorSlice = createSlice({
@@ -34,7 +36,16 @@ const VisitorSlice = createSlice({
       })
       .addCase(saveVisitors.rejected, (state) => {
         state.isLoading = STATUS.FAILURE;
-      });
+      }).addCase(getallVisiterData.pending, (state) => {
+        state.isLoading = STATUS.LOADING;
+      })
+      .addCase(getallVisiterData.fulfilled, (state,action:PayloadAction<Object>) => {
+        state.isLoading = STATUS.SUCCESS;
+        state.data =action.payload.data;
+      })
+      .addCase(getallVisiterData.rejected, (state) => {
+        state.isLoading = STATUS.FAILURE;
+      })
   },
 });
 
@@ -58,6 +69,23 @@ export const saveVisitors: any = createAsyncThunk(
       return rejectWithValue("Failed to Saved the vistors");
     } catch (error: any) {
       return rejectWithValue(`Error while fetching the url: ${error}`);
+    }
+  }
+);
+
+export const getallVisiterData: any = createAsyncThunk(
+  "stats/vistieduser",
+  async (_id: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/visitedusers/${_id}`
+      );
+      if (response.status === 200) {
+        return response.data;
+      }
+      return rejectWithValue("User not found");
+    } catch (error:any) {
+      return rejectWithValue(`Error fetching user: ${error.message}`);
     }
   }
 );

@@ -176,4 +176,22 @@ export const countVistors: any = createAsyncThunk(
   }
 );
 
+export const findUrlById: any = createAsyncThunk(
+  "dashboard/url",
+  async (_id: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/dashboard/urls/${_id}`
+      );
+      console.log("Inside findByurl",response)
+      if (response.status === 200) {
+        return response.data;
+      }
+      return rejectWithValue("Failed to fecth the URL");
+    } catch (error: any) {
+      return rejectWithValue(`Error while fetching the url: ${error}`);
+    }
+  }
+);
+
 export default DashBoardSlice.reducer;
